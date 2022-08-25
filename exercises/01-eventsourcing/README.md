@@ -246,7 +246,7 @@ In this code, we perform the following steps:
 We've now seen how to restore the state to an aggregate using the `AggregateStreamAsync` method. We've also learned
 how to use the `Append` method on the event store to save new events to an existing event stream.
 
-You can repeat the process that we used for `CancelSubscription` to implement the `StartSubscription` method.
+You can repeat the process that we used for `CancelSubscription` to implement the `Resubscribe` method.
 
 ## Summary and next steps
 
