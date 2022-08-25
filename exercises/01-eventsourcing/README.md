@@ -49,11 +49,11 @@ Add the following content to the class:
 Let's go over each of the parts in this class:
 
 1. First, we create a private list containing any pending domain events that we need to process.
-2. After this, we add a property containing a read-only list of domain events to be used by application code later.
+2. After this, we add a property containing a read-only list of domain events to be used by the application code later.
 3. Next, we add a protected method called `Emit`. The aggregate uses this method to generate a domain event.
 4. Then, we add another protected method `TryApplyDomainEvent`. This method is abstract; we'll implement it later.
-   The `Emit` method calls the `TryApplyDomainEvent` to match the event against an event handler which will update
-   the state of the aggregate. When we've successfully applied the domain event, we can add the event to the list of
+   The `Emit` method calls the `TryApplyDomainEvent` to match the event against an event handler which will update the
+   aggregate state. When we've successfully applied the domain event, we can add the event to the list of
    generated domain events we'll store later.
 
 Now that we have the basics, we can start building the aggregate.
