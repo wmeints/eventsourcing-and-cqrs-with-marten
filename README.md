@@ -43,9 +43,9 @@ We've made some exercises to get you started building an event-sourced system wi
 The first two exercises focus on building a domain and a couple of projections. The final exercise adds another library
 called Jasper, which helps you implement command and query handlers to implement CQRS.
 
-1. Implementing event-sourced entities
-2. Building read models
-3. Applying CQRS principles
+1. [Implementing event-sourced entities](./exercises/01-eventsourcing/README.md)
+2. [Building read models](./exercises/02-projections/README.md)
+3. [Applying CQRS principles](./exercises/03-cqrs/README.md)
 
 You can start from the first exercise and keep expanding your project. Or you can complete one exercise without
 completing the other exercises.
