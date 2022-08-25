@@ -26,7 +26,8 @@ We'll add a couple of valuable operations to the `AggregateRoot` class.
 
 ------------------------------------------------------------------------------------------------------------------------
 
-**What is an aggregate*The aggregate design pattern is an essential one you'll often find in microservices. It's part
+**What is an aggregate**  
+The aggregate design pattern is an essential one you'll often find in microservices. It's part
 of the Domain Driven Design movement. 
 
 An aggregate is a collection of entities or objects you can treat as a single unit. Operations that modify the state
