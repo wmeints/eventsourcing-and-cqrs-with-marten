@@ -3,7 +3,7 @@
 Welcome to the masterclass Event-sourcing and CQRS with Marten. In this workshop, you'll learn how to apply 
 event-sourcing and separate write-operations from read-operations using CQRS (Command Query Responsibility Segregation).
 
-This workshop has a couple of exercises that help you understand the essential concepts of event-sourcing and CQRS.
+This masterclass has a couple of exercises that help you understand the essential concepts of event-sourcing and CQRS.
 
 ## About the case
 
