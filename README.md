@@ -30,7 +30,7 @@ requirements:
 
 * New customers can register for a subscription
 * Existing customers can cancel their subscription
-* Customers who canceled before, can resubscribe
+* Customers who canceled before can resubscribe
 
 ## About the slides
 
