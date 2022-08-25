@@ -1,0 +1,1 @@
+# Exercise 1 - Implementing event-sourced entities

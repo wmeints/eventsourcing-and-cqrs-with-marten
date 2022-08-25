@@ -1,0 +1,1 @@
+# Exercise 2 - Building read models

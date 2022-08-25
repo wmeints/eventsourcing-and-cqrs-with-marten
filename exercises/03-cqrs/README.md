@@ -1,0 +1,1 @@
+# Exercise 3 - Applying CQRS principles
