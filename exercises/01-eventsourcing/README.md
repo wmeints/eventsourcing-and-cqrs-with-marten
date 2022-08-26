@@ -43,7 +43,26 @@ Create a new class in the folder `exercises/01-eventsourcing/start/Profile.Api/S
 Add the following content to the class:
 
 ```csharp
-//TODO: Add code
+namespace Profile.Api.Shared;
+
+public abstract class AggregateRoot
+{
+    private readonly List<object> _pendingDomainEvents = new();
+
+    public Guid Id { get; protected set; }
+    
+    public IReadOnlyCollection<object> PendingDomainEvents => _pendingDomainEvents.AsReadOnly();
+
+    protected void Emit(object domainEvent)
+    {
+        if (TryApplyDomainEvent(domainEvent))
+        {
+            _pendingDomainEvents.Add(domainEvent);
+        }
+    }
+
+    protected abstract bool TryApplyDomainEvent(object domainEvent);
+}
 ```
 
 Let's go over each of the parts in this class:
@@ -64,29 +83,59 @@ The profile service has the concept of a Customer. Each customer has a subscript
 end date. Each customer has a first name, last name, shipping address, and invoice address.
 
 First, create a new file in `exercises/01-eventsourcing/start/Profile.Api/Domain/Address.cs`.
-Add the following content to the end of the file:
+Replace the content of the file with the following code:
 
 ```csharp
-//TODO: Add code
+namespace Profile.Api.Domain;
+
+public record Address(string Street, string BuildingNumber, string ZipCode, string City);
 ```
 
 Next, add a file `exercises/01-eventsourcing/start/Profile.Api/Domain/Subscription.cs`.
-Add the following content to the end of the file:
+Replace the content of the file with the following code:
 
 ```csharp
-//TODO: Add code
+namespace Profile.Api.Domain;
+
+public record Subscription(DateOnly StartDate, DateOnly? EndDate);
 ```
 
 Finally, create a new file `exercises/01-eventsourcing/start/Profile.Api/Domain/Customer.cs`.
 Add the following content to the end of the file:
 
 ```csharp
-//TODO: Add code
+using Profile.Api.Shared;
+
+namespace Profile.Api.Domain;
+
+public class Customer: AggregateRoot
+{
+    public string FirstName { get; private set; }
+    public string LastName { get; private set; }
+    public Address InvoiceAddress { get; private set; }
+    public Address ShippingAddress { get; private set; }
+    public string EmailAddress { get; private set; }
+    public Subscription? Subscription { get; private set; }
+    
+    private Customer()
+    {
+        
+    }
+    
+    protected override bool TryApplyDomainEvent(object domainEvent)
+    {
+        switch (domainEvent)
+        {
+            default:
+                return false;
+        }
+
+        return true;
+    }
+}
 ```
 
 The `Customer` class derives from the `AggregateRoot` class from the `Shared` namespace.
-Please note that you may have to import the `Shared` namespace with a using statement.
-
 In the `Customer` class we've implemented the `TryApplyDomainEvent` with some place holder logic.
 It works like this. We match the `domainEvent` parameter against a specific type. If there's a match,
 we'll handle the event. If there's no match, the code will go through the `default:` case in the switch
@@ -103,16 +152,27 @@ to the `Customer` class. A customer shouldn't exist if it weren't first register
 construct a new customer as part of the registration process.
 
 Create a new file `exercises/01-eventsourcing/start/Profile.Api/Domain/Events/CustomerRegistered.cs`.
-Add the following content to the end of the file:
+Replace the content of the file with the following code:
 
 ```csharp
-//TODO: Code
+namespace Profile.Api.Domain.Events;
+
+public record CustomerRegistered(
+    Guid Id,
+    string FirstName, 
+    string LastName,
+    Address InvoiceAddress,
+    Address ShippingAddress,
+    string EmailAddress);
 ```
 
 Add the following code to the `Customer` class after the properties at the top of the class:
 
 ```csharp
-//TODO: Code
+public Customer(Guid id, string firstName, string lastName, Address invoiceAddress, Address shippingAddress, string emailAddress)
+{
+   Emit(new CustomerRegistered(id, firstName, lastName, invoiceAddress, shippingAddress, emailAddress));
+}
 ```
 
 The constructor takes the input and creates a new `CustomerRegistered` event. 
@@ -123,7 +183,15 @@ Next, we need to create a new method that updates the entity's state.
 Add the following code to the end of the class file:
 
 ```csharp
-//TODO: Code
+private void Apply(CustomerRegistered customerRegistered)
+{
+    Id = customerRegistered.Id;
+    FirstName = customerRegistered.FirstName;
+    LastName = customerRegistered.LastName;
+    InvoiceAddress = customerRegistered.InvoiceAddress;
+    ShippingAddress = customerRegistered.ShippingAddress;
+    EmailAddress = customerRegistered.EmailAddress;
+}
 ```
 
 This method takes the event and updates the properties defined in the `Customer` class.
@@ -132,7 +200,19 @@ As a final step, we need to add a new case to the `switch` statement in the `Try
 Modify the `TryApplyDomainEvent` method to match the following code:
 
 ```csharp
-//TODO: Code
+protected override bool TryApplyDomainEvent(object domainEvent)
+{
+    switch (domainEvent)
+    {
+        case CustomerRegistered customerRegistered:
+            Apply(customerRegistered);
+            break;
+        default:
+            return false;
+    }
+
+    return true;
+}
 ```
 
 Notice how we've placed the state updates in an event handler instead of the constructor.
