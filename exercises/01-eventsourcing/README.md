@@ -327,7 +327,19 @@ the following steps:
 Add the following code to the `CancelSubscription` method:
 
 ```csharp
-//TODO: Code
+var customer = await _documentSession.Events.AggregateStreamAsync<Customer>(customerId);
+
+if (customer == null)
+{
+    return NotFound();
+}
+
+customer.Unsubscribe();
+
+_documentSession.Events.Append(customerId, customer.PendingDomainEvents);
+await _documentSession.SaveChangesAsync();
+
+return Accepted();
 ```
 
 In this code, we perform the following steps:
