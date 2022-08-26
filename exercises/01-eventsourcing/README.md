@@ -191,6 +191,7 @@ private void Apply(CustomerRegistered customerRegistered)
     InvoiceAddress = customerRegistered.InvoiceAddress;
     ShippingAddress = customerRegistered.ShippingAddress;
     EmailAddress = customerRegistered.EmailAddress;
+    Subscription = new Subscription(DateOnly.FromDateTime(DateTime.UtcNow), null);
 }
 ```
 
