@@ -284,13 +284,26 @@ Let's start by implementing the RegisterCustomer operation.
 In the `CustomersController` class, find the `RegisterCustomer` method and add the following code to the method:
 
 ```csharp
-//TODO: Code
+var customerId = Guid.NewGuid();
+
+var customer = new Customer(
+    customerId, 
+    form.FirstName,
+    form.LastName,
+    form.InvoiceAddress,
+    form.ShippingAddress,
+    form.EmailAddress);
+
+_documentSession.Events.StartStream<Customer>(customerId, customer.PendingDomainEvents);
+await _documentSession.SaveChangesAsync();
+
+return Accepted();
 ```
 
 This code performs the following steps:
 
 1. First, we create a new customer instance from the provided input data.
-2. Then, we read the list of generated domain events from the `Customer` instance and uses the `CreateStream` method
+2. Then, we read the list of generated domain events from the `Customer` instance and uses the `StartStream` method
    to start a new event stream for the customer.
 3. Next, we save the changes to the database using `SaveChangesAsync`.
 4. Finally, we return the Accepted HTTP status to the client of the API.
@@ -314,7 +327,19 @@ the following steps:
 Add the following code to the `CancelSubscription` method:
 
 ```csharp
-//TODO: Code
+var customer = await _documentSession.Events.AggregateStreamAsync<Customer>(customerId);
+
+if (customer == null)
+{
+    return NotFound();
+}
+
+customer.Unsubscribe();
+
+_documentSession.Events.Append(customerId, customer.PendingDomainEvents);
+await _documentSession.SaveChangesAsync();
+
+return Accepted();
 ```
 
 In this code, we perform the following steps:
