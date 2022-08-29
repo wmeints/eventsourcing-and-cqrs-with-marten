@@ -43,12 +43,41 @@ We've made some exercises to get you started building an event-sourced system wi
 The first two exercises focus on building a domain and a couple of projections. The final exercise adds another library
 called Jasper, which helps you implement command and query handlers to implement CQRS.
 
+### System requirements
+
+You need the following software on your machine for the exercises:
+
+* Docker Desktop
+* Visual Studio Code/Visual Studio 2022/Rider
+* .NET 6 SDK
+
+### Preparing your machine
+
+Make sure you have the software mentioned in the requirements installed on your machine. 
+Then, open a new terminal and run the following command to start the postgres database:
+
+```shell
+docker-compose up -d
+```
+
+### Running the exercises
+
+Please follow these links to access the various exercises:
+
 1. [Implementing event-sourced entities](./exercises/01-eventsourcing/README.md)
 2. [Building read models](./exercises/02-projections/README.md)
 3. [Applying CQRS principles](./exercises/03-cqrs/README.md)
 
 You can start from the first exercise and keep expanding your project. Or you can complete one exercise without
 completing the other exercises.
+
+### Cleaning up
+
+After you're done with the exercises, run the following command to shutdown the database server:
+
+```shell
+docker-compose down
+```
 
 ## License
 
