@@ -53,4 +53,22 @@ public class CustomersController : ControllerBase
 
         return Accepted();
     }
+
+    [HttpPost("{customerId:guid}/subscribe")]
+    public async Task<IActionResult> StartSubscription(Guid customerId)
+    {
+        var customer = await _documentSession.Events.AggregateStreamAsync<Customer>(customerId);
+
+        if (customer == null)
+        {
+            return NotFound();
+        }
+
+        customer.Subscribe();
+
+        _documentSession.Events.Append(customer.Id, customer.PendingDomainEvents);
+        await _documentSession.SaveChangesAsync();
+
+        return Accepted();
+    }
 }

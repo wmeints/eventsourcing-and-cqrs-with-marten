@@ -28,7 +28,7 @@ public class Customer : AggregateRoot
         Emit(new SubscriptionCanceled(Id, DateOnly.FromDateTime(DateTime.UtcNow)));
     }
 
-    public void Resubscribe()
+    public void Subscribe()
     {
         Emit(new SubscriptionStarted(Id, DateOnly.FromDateTime(DateTime.UtcNow)));
     }

@@ -60,7 +60,7 @@ public class CustomerTests
             "test@domain.org");
 
         customer.Unsubscribe();
-        customer.Resubscribe();
+        customer.Subscribe();
         
         Assert.Single(customer.PendingDomainEvents.Where(x => x is SubscriptionStarted));
         Assert.NotNull(customer.Subscription);

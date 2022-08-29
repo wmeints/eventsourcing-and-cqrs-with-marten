@@ -220,11 +220,20 @@ Notice how we've placed the state updates in an event handler instead of the con
 Separating operations from event handlers will prove essential to our event-sourcing implementation later in the
 exercise.
 
+------------------------------------------------------------------------------------------------------------------------
+
+**Important**  
+Each method that modifies the state must be named `Apply`. We can use overloads of this method for each of the event
+types. This is a requirement of Marten. When restoring an aggregate later, Marten will call the `Apply` method for each
+event it reads from the event store.
+
+------------------------------------------------------------------------------------------------------------------------
+
 Now that you've implemented the first domain operation, you can repeat the process for the other operations that we
 need. We'll need the following events in our code base:
 
-* SubscriptionCanceled - Should be emitted by the `CancelSubscription` method.
-* SubscriptionStarted - Should be emitted by the `Resubscribe` method.
+* SubscriptionCanceled - Should be emitted by the `Unsubscribe` method.
+* SubscriptionStarted - Should be emitted by the `Subscribe` method.
 
 You can copy the event definitions from the directory `exercises/01-eventsourcing/solution/Profile.Api/Domain/Events/`.
 After copying the event definitions, add the methods as described before. Make sure you add the event handlers 
@@ -324,7 +333,7 @@ the following steps:
 3. Next, we need to execute the `Unsubscribe` method on the customer.
 4. Finally, we need to append the newly generated domain events to the event stream.
 
-Add the following code to the `CancelSubscription` method:
+Add the following code to the `CancelSubscription` method in the `CustomersController`:
 
 ```csharp
 var customer = await _documentSession.Events.AggregateStreamAsync<Customer>(customerId);
@@ -358,6 +367,8 @@ You can repeat the process that we used for `CancelSubscription` to implement th
 
 This first exercise taught us how to implement an event-sourced aggregate. We've also seen how to use Marten as
 a pragmatic event store to persist events generated in our domain.
+
+For the complete solution, check out the sources in [exercises/01-eventsource/solution](./solution/).
 
 We'll extend the logic we created with projections for the next exercise. 
 
