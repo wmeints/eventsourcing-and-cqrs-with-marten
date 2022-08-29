@@ -249,7 +249,16 @@ customer's business. After fully understanding a scenario, it would be best to s
 communication interface.
 
 Open `exercises/01-eventsourcing/start/Profile.Api/Program.cs` and search for a line starting with
-`app.Services.AddMarten`. The logic you find there configures Marten in your application as a document store.
+`app.Services.AddMarten`. The logic you find there configures Marten in your application as a document store and looks
+like this:
+
+```csharp
+builder.Services.AddMarten(marten =>
+{
+    marten.Connection(builder.Configuration.GetConnectionString("DefaultDatabase"));
+    marten.AutoCreateSchemaObjects = AutoCreate.CreateOnly;
+});
+```
 
 We need to provide Marten with a connection to a Postgres database. We must also tell it to populate the database when
 it starts.
