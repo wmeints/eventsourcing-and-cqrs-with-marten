@@ -35,17 +35,17 @@ public class CustomersController : ControllerBase
         return Ok(result);
     }
 
-[HttpGet("")]
-public async Task<IActionResult> GetCustomers(int pageIndex)
-{
-    var results = await _documentSession
-        .Query<CustomerInfo>()
-        .ToPagedListAsync(pageIndex, 20);
+    [HttpGet("")]
+    public async Task<IActionResult> GetCustomers(int pageIndex)
+    {
+        var results = await _documentSession
+            .Query<CustomerInfo>()
+            .ToPagedListAsync(pageIndex, 20);
 
-    return Ok(new PagedResult<CustomerInfo>(results, 
-        (int)results.PageNumber, (int)results.PageSize,
-        results.TotalItemCount));
-}
+        return Ok(new PagedResult<CustomerInfo>(results,
+            (int)results.PageNumber, (int)results.PageSize,
+            results.TotalItemCount));
+    }
 
     [HttpPost("")]
     public async Task<IActionResult> RegisterCustomer(RegisterCustomerForm form)
