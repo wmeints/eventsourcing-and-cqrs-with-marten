@@ -1,8 +1,11 @@
 ﻿using Marten;
+using Marten.Pagination;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
+using Profile.Api.Application.ReadModels;
 using Profile.Api.Domain;
 using Profile.Api.Forms;
+using Profile.Api.Shared;
 
 namespace Profile.Api.Controllers;
 
@@ -16,6 +19,33 @@ public class CustomersController : ControllerBase
     {
         _documentSession = documentSession;
     }
+
+    [HttpGet("{customerId:guid}")]
+    public async Task<IActionResult> GetCustomerDetails(Guid customerId)
+    {
+        var result = await _documentSession
+            .Query<CustomerInfo>()
+            .FirstOrDefaultAsync(x => x.Id == customerId);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(result);
+    }
+
+[HttpGet("")]
+public async Task<IActionResult> GetCustomers(int pageIndex)
+{
+    var results = await _documentSession
+        .Query<CustomerInfo>()
+        .ToPagedListAsync(pageIndex, 20);
+
+    return Ok(new PagedResult<CustomerInfo>(results, 
+        (int)results.PageNumber, (int)results.PageSize,
+        results.TotalItemCount));
+}
 
     [HttpPost("")]
     public async Task<IActionResult> RegisterCustomer(RegisterCustomerForm form)

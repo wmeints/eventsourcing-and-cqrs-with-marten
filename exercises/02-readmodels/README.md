@@ -112,7 +112,90 @@ Now that we have the projection made, let's wire it up to Marten so that events 
 
 ## Step 2 - Register the projection with Marten
 
+Right now, the projection does nothing because Marten doesn't know about it. We need to modify the code in `Program.cs`
+to include the projection. Open the file `exercises/02-readmodels/Profile.Api/Program.cs` and modify the line that calls
+`builder.Services.AddMarten` to include the projection. Add a new line to the lambda that configures Marten:
+
+```csharp
+marten.Projections.Add<CustomerInfoProjection>();
+```
+
+After modifying the Marten configuration, the code should look like this:
+
+```csharp
+builder.Services.AddMarten(marten =>
+{
+    marten.Connection(builder.Configuration.GetConnectionString("DefaultDatabase"));
+    marten.AutoCreateSchemaObjects = AutoCreate.CreateOnly;
+
+    marten.Projections.Add<CustomerInfoProjection>();
+});
+```
+
+The last step in this exercise is to use the new read model in the API.
+
 ## Step 3 - Use the read model from the service
+
+To use the read model, we can query the `CustomerInfo` type as a regular document in Marten. Marten allows you to query
+documents by calling the `Query<T>` method on the `IDocumentSession` that we've used previously to access event store.
+
+Let's add a method to query a single customer from the API.
+
+Add a new method to controller class in the file `exercises/02-readmodels/Profile.Api/Controllers/CustomersController.cs`
+using the following code:
+
+```csharp
+[HttpGet("{customerId:guid}")]
+public async Task<IActionResult> GetCustomerDetails(Guid customerId) 
+{
+    var result = await _documentSession.Query<CustomerInfo>().FirstOrDefaultAsync(x=>x.Id == customerId);
+    
+    if(result == null) 
+    {
+        return NotFound();
+    }
+
+    return Ok(result);
+}
+```
+
+To complete the query part of the application, let's also add a method to get a list of customers. We're going to use
+paging to limit the number of customers returned by the API. Add the following code to the controller file:
+
+```csharp
+[HttpGet("")]
+public async Task<IActionResult> GetCustomers(int pageIndex)
+{
+    var results = await _documentSession
+        .Query<CustomerInfo>()
+        .ToPagedListAsync(pageIndex, 20);
+
+    return Ok(new PagedResult<CustomerInfo>(results, 
+        (int)results.PageNumber, (int)results.PageSize,
+        results.TotalItemCount));
+}
+```
+
+First, we're querying the `CustomerInfo` read model. Instead of just returning a list, we're going to use a special
+operation offered by Marten, called `ToPagedListAsync`. By using the paging operation we're only getting a limited
+set of customers based on the page index we choose to send to the API.
+
+We're returning a new `PagedResult<T>` instance with the information we retrieved from the database.
+
+## Testing your work
+
+You can test the API using [the REST client addon][REST_ADDON] for Visual Studio Code. We've included a few sample
+files in the [requests](../../requests/) folder.
+
+Make sure you've started the postgres database server as per [the instructions](../../README.md#preparing-your-machine)
+in the root of the repository.
 
 ## Summary
 
+In this exercise we've added a read model to the application and wrote methods to query the read model. 
+In the last exercise we're going to add an application layer to implement CQRS using command handlers and query
+handlers.
+
+[Next exercise](../03-cqrs/README.md)
+
+[REST_ADDON]: https://marketplace.visualstudio.com/items?itemName=humao.rest-client

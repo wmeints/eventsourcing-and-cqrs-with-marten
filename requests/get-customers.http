@@ -1,0 +1,2 @@
+GET https://localhost:7065/customers?page=0
+Accept: application/json

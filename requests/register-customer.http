@@ -1,0 +1,21 @@
+POST https://localhost:7065/customers
+Content-Type: application/json
+Accept: application/json
+
+{
+    "firstName": "Bob",
+    "lastName": "the Customer",
+    "emailAddress": "test@domain.org",
+    "shippingAddress": {
+        "streetName": "Somewhere",
+        "buildigNumber": "123",
+        "zipCode": "1234AA",
+        "city": "Test City"
+    },
+    "invoiceAddress": {
+        "streetName": "Somewhere",
+        "buildigNumber": "123",
+        "zipCode": "1234AA",
+        "city": "Test City"
+    }
+}
