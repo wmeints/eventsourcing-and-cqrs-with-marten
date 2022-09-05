@@ -1,4 +1,4 @@
-# Exercise 3 - Applying CQRS principles
+# Exercise 3 - Working with snapshots
 
 In the previous exercise we spend some time to build a projection for querying customer information in the profile
 service. In this exercise we're going to introduce another important aspect to optimize an event-sourced system for

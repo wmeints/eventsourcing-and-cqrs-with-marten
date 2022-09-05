@@ -66,7 +66,7 @@ Please follow these links to access the various exercises:
 
 1. [Implementing event-sourced entities](./exercises/01-eventsourcing/README.md)
 2. [Building read models](./exercises/02-readmodels/README.md)
-3. [Applying CQRS principles](./exercises/03-cqrs/README.md)
+3. [Working with snapshots](./exercises/03-snapshotting/README.md)
 
 You can start from the first exercise and keep expanding your project. Or you can complete one exercise without
 completing the other exercises.
