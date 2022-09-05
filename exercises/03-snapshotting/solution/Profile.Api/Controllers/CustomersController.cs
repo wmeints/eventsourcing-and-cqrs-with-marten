@@ -69,7 +69,21 @@ public class CustomersController : ControllerBase
     [HttpPost("{customerId:guid}/unsubscribe")]
     public async Task<IActionResult> CancelSubscription(Guid customerId)
     {
-        var customer = await _documentSession.Events.AggregateStreamAsync<Customer>(customerId);
+        var customer = await _documentSession.Query<Customer>().SingleOrDefaultAsync(x => x.Id == customerId);
+
+        if (customer is { })
+        {
+            // Restore from the version of the customer snapshot we retrieved.
+            customer = await _documentSession.Events.AggregateStreamAsync(
+                customerId,
+                version: customer.Version,
+                state: customer);
+        }
+        else
+        {
+            // Perform a regular restore if we haven't stored a snapshot yet.
+            customer = await _documentSession.Events.AggregateStreamAsync<Customer>(customerId);
+        }
 
         if (customer == null)
         {
