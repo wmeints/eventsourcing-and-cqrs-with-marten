@@ -40,10 +40,10 @@ public class CustomersController : ControllerBase
     {
         var results = await _documentSession
             .Query<CustomerInfo>()
-            .ToPagedListAsync(pageIndex, 20);
+            .ToPagedListAsync(pageIndex + 1, 20);
 
         return Ok(new PagedResult<CustomerInfo>(results,
-            (int)results.PageNumber, (int)results.PageSize,
+            (int)results.PageNumber - 1, (int)results.PageSize,
             results.TotalItemCount));
     }
 
