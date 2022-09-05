@@ -1,0 +1,3 @@
+# Make sure you modify the GUID in the request URL!
+GET https://localhost:7065/customers/2ef98be9-c998-410c-86f2-c81fb260909f
+Accept: application/json

@@ -1,0 +1,4 @@
+# Make sure you modify the GUID in the request URL!
+POST https://localhost:7065/customers/2ef98be9-c998-410c-86f2-c81fb260909f/unsubscribe
+Accept: application/json
+Content-Type: application/json

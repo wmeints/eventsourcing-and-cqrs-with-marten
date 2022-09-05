@@ -56,11 +56,13 @@ public class Customer : AggregateRoot
     private void Apply(SubscriptionStarted subscriptionStarted)
     {
         Subscription = new Subscription(subscriptionStarted.StartDate, null);
+        Version++;
     }
 
     private void Apply(SubscriptionCanceled subscriptionCanceled)
     {
         Subscription = Subscription with { EndDate = subscriptionCanceled.EndDate };
+        Version++;
     }
 
     private void Apply(CustomerRegistered customerRegistered)
@@ -72,5 +74,6 @@ public class Customer : AggregateRoot
         ShippingAddress = customerRegistered.ShippingAddress;
         EmailAddress = customerRegistered.EmailAddress;
         Subscription = new Subscription(DateOnly.FromDateTime(DateTime.UtcNow), null);
+        Version++;
     }
 }

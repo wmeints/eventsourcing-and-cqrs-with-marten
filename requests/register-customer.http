@@ -7,14 +7,14 @@ Accept: application/json
     "lastName": "the Customer",
     "emailAddress": "test@domain.org",
     "shippingAddress": {
-        "streetName": "Somewhere",
-        "buildigNumber": "123",
+        "street": "Somewhere",
+        "buildingNumber": "123",
         "zipCode": "1234AA",
         "city": "Test City"
     },
     "invoiceAddress": {
-        "streetName": "Somewhere",
-        "buildigNumber": "123",
+        "street": "Somewhere",
+        "buildingNumber": "123",
         "zipCode": "1234AA",
         "city": "Test City"
     }

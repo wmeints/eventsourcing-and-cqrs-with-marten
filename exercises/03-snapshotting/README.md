@@ -72,7 +72,48 @@ Open the file `exercises/03-snapshotting/start/Profile.Api/Controllers/Customers
 the `StartSubscription` method with the following content:
 
 ```csharp
+var customer = await _documentSession.Query<Customer>().SingleOrDefaultAsync(x => x.Id == customerId);
 
+if (customer is { })
+{
+    // Restore from the version of the customer snapshot we retrieved.
+    customer = await _documentSession.Events.AggregateStreamAsync(
+        customerId, 
+        version: customer.Version,
+        state: customer);
+}
+else
+{
+    // Perform a regular restore if we haven't stored a snapshot yet.
+    customer = await _documentSession.Events.AggregateStreamAsync<Customer>(customerId);
+}
+
+if (customer == null)
+{
+    return NotFound();
+}
+
+customer.Subscribe();
+
+_documentSession.Events.Append(customer.Id, customer.PendingDomainEvents);
+await _documentSession.SaveChangesAsync();
+
+return Accepted();
 ```
+
+In the new logic, we try to restore a snapshot. If we find a snapshot, we replay the events, starting at the snapshot version.
+When we can't find a snapshot, we'll instead replay everything from version 0 onward. If, in the end, we can't restore the customer state, we abandon the rest of the operation.
+
+The start subscription now supports restoring from snapshots. You can use the first line that restore the customer
+state from a snapshot or the stream in the `CancelSubscription` method to complete this exercise.
+
+## Summary
+
+In this exercise we've learned how to work with snapshots. For the purpose of the exercise, we implemented the snapshot restore code
+directly in the controller. You can improve upon this by using a `Repository` that handles the snapshot logic for you. 
+
+After completing all the exercises you should understand enough about event-sourcing to implement the `Repository` pattern with optimistic concurrency control without a lot of problems.
+
+We hope you enjoyed this workshop. Please star this repository if you've followed this workshop :smile:
 
 [CONCURRENCY_CONTROL]: https://martendb.io/scenarios/aggregates-events-repositories.html#scenario

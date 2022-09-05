@@ -40,10 +40,10 @@ public class CustomersController : ControllerBase
     {
         var results = await _documentSession
             .Query<CustomerInfo>()
-            .ToPagedListAsync(pageIndex, 20);
+            .ToPagedListAsync(pageIndex + 1, 20);
 
         return Ok(new PagedResult<CustomerInfo>(results,
-            (int)results.PageNumber, (int)results.PageSize,
+            (int)results.PageNumber - 1, (int)results.PageSize,
             results.TotalItemCount));
     }
 
@@ -79,6 +79,8 @@ public class CustomersController : ControllerBase
         customer.Unsubscribe();
 
         _documentSession.Events.Append(customerId, customer.PendingDomainEvents);
+        _documentSession.Store(customer); // Store a snapshot for the customer.
+
         await _documentSession.SaveChangesAsync();
 
         return Accepted();
@@ -87,7 +89,21 @@ public class CustomersController : ControllerBase
     [HttpPost("{customerId:guid}/subscribe")]
     public async Task<IActionResult> StartSubscription(Guid customerId)
     {
-        var customer = await _documentSession.Events.AggregateStreamAsync<Customer>(customerId);
+        var customer = await _documentSession.Query<Customer>().SingleOrDefaultAsync(x => x.Id == customerId);
+
+        if (customer is { })
+        {
+            // Restore from the version of the customer snapshot we retrieved.
+            customer = await _documentSession.Events.AggregateStreamAsync(
+                customerId,
+                version: customer.Version,
+                state: customer);
+        }
+        else
+        {
+            // Perform a regular restore if we haven't stored a snapshot yet.
+            customer = await _documentSession.Events.AggregateStreamAsync<Customer>(customerId);
+        }
 
         if (customer == null)
         {
